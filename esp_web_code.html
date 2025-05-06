@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<style>@import url('https://fonts.googleapis.com/css?family=Overlock');
+
+		body {
+			background: #643a7a;
+		}
+		*{box-sizing: border-box;}
+		body{font-family: Arial, sans-serif;margin: 0;padding: 0;display: flex;justify-content: center;align-items: center;height: 100vh;background-color: #f0f0f0;color: #333;transition: background-color 0.3s, color 0.3s;}
+		.container {margin-top: 2vh; text-align: center;padding: 20px;border-radius: 10px; color: white;box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);background: linear-gradient(135deg, red, black, blue);transition: background-color 0.3s;}
+		
+		.data-container {margin: 20px 0;}
+		.data-item {margin: 10px 0;}
+		.mode-toggle {display: flex;justify-content: center;align-items: center;margin-top: 20px;} 
+		.switch {position: relative;display: inline-block;width: 60px;height: 34px;} 
+		.switch input {opacity: 0;width: 0;height: 0;}
+		.slider {position: absolute;cursor: pointer;top: 0;left: 0;right: 0;bottom: 0;background-color: #ccc;transition: .4s;border-radius: 34px;} 
+		.slider:before {position: absolute;content: '';height: 26px;width: 26px;left: 4px;bottom: 4px;background-color: white;transition: .4s;border-radius: 50%;} 
+		input:checked + .slider {background-color: #2196F3;}
+		input:checked + .slider:before {transform: translateX(26px);}
+		body.dark-mode {background-color: #333;color: #f0f0f0;}
+		body.dark-mode .container {background-color: #444;}
+		.joystick {
+            display: grid;
+            grid-template-rows: 50px 50px 50px;
+            grid-template-columns: 50px 50px 50px;
+            gap: 10px;
+        }
+
+        .joystick button {
+            width: 50px;
+            height: 50px;
+            font-size: 14px;
+            font-weight: bold;
+            /* background-color: #4CAF50; */
+			background: linear-gradient(135deg, red, blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .joystick button:hover {
+            background-color: #45a049;
+        }
+
+        /* Positioning buttons in the grid */
+        .up {
+            grid-row: 1;
+            grid-column: 2;
+        }
+
+        .left {
+            grid-row: 2;
+            grid-column: 1;
+        }
+
+        .right {
+            grid-row: 2;
+            grid-column: 3;
+        }
+
+        .down {
+            grid-row: 3;
+            grid-column: 2;
+        }
+
+        .stop {
+            grid-row: 2;
+            grid-column: 2;
+        }
+		.frame {
+		  position: relative;
+		  width: 400px;
+		  height: 400px;
+		  margin-top: 5vh;
+		  margin-left: 5vw;
+		  border-radius: 2px;
+		  box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, 0.6);
+			background-image: linear-gradient(to top, #40334f, #2f273c, #272232, #201c29);
+		  color: #4b384c;
+		  font-family: 'overlock', Helvetica, sans-serif;
+		  font-weight: 300;
+		  -webkit-font-smoothing: antialiased;
+		  -moz-osx-font-smoothing: grayscale;
+		  overflow: hidden;
+		}
+		
+		.moon {
+		  position: absolute;
+			width: 6rem;
+			height: 6rem;
+		  top: 45px;
+		  left: 55px;
+		  border-radius: 50px;
+			background-image: linear-gradient(to left top, #b1b1c5, #928fa3, #746f82, #575162, #3c3444);
+			box-shadow: 0 0 3rem fade-out(#B1B1C5, .8);
+			animation: rise 1s ease-out;
+			/* &:hover {
+				transform: scale(1.2);
+				transition: 3s;
+			} */
+		}
+		
+		.moon-crater1 {
+			position: absolute;
+			width: 1.7rem;
+			height: 1.7rem;
+			border-radius: 50%;
+			border: 4px solid fade-out(#3C3444, .9);
+			top: 1rem;
+			left: .8rem;
+		}
+		.moon-crater2 {
+			position: absolute;
+			width: 1.4rem;
+			height: 1.4rem;
+			border-radius: 50%;
+			background: fade-out(#3C3444, .85);
+			top: 3.4rem;
+			left: 2.8rem;
+		}
+		
+		.hill-bg-1, .hill-bg-2, .hill-fg-1, .hill-fg-2, .hill-fg-3 {
+		  position: absolute;
+		  z-index: 2;
+		  width: 337px;
+		  height: 281px;
+		  top: 201px;
+		  left: -57px;
+		  background: #503760;
+		  border-radius: 50%;
+			box-shadow: -.5rem 0 .8rem rgba(0, 0, 0, .3);
+		}
+		
+		.hill-bg-2 {
+		  top: 177px;
+		  left: 177px;
+		}
+		
+		.hill-fg-1, .hill-fg-2, .hill-fg-3 {
+		  background: #695b93;
+		  top: 228px;
+		  left: -137px;
+		}
+		
+		.hill-fg-2 {
+		  top: 251px;
+		  left: 63px;
+		}
+		
+		.hill-fg-3 {
+		  top: 218px;
+		  left: 292px;
+		}
+		
+		.front {
+		  position: absolute;
+		  z-index: 10;
+		  width: 400px;
+		  height: 140px;
+		  left: 0;
+		  bottom: -53px;
+		  background: #fff;
+			box-shadow: -1rem 0 1rem rgba(0, 0, 0, .5);
+			animation: slide 1s;
+			transition: 1s ease-in-out;
+			z-index: 1000;
+			/* &:hover {
+				bottom: 0;
+			} */
+		}
+		
+		@keyframes slide {
+			0%, 45% {
+				transform: translateY(90px);
+			}
+			to {
+				transform: translateY(0px);
+			}
+		}
+		
+		.front .temperature {
+		  float: left;
+		  margin-left: 20px;
+		  font-size: 43px;
+		  line-height: 90px;
+		}
+		.front .info {
+		  float: left;
+		  margin: 2rem 0 0 3rem;
+		  font-size: 0.8rem;
+		  line-height: 20px;
+		}
+		.icons {
+			position: absolute;
+			top: 2rem;
+			left: 9rem;
+			line-height: 20px;
+		}
+		.front .heading{
+			float: right;
+			font-weight: 700;
+			text-align: right;
+			font-size: 1.5rem;
+			line-height: 20px;
+			margin: 5px 35px 0 0;
+		}
+		.front .preview {
+		  float: right;
+		  font-weight: 400;
+		  text-align: right;
+		  font-size: 1rem;
+		  line-height: 20px;
+		  margin: 5px 20px 0 0;
+		}
+		.front .preview td {
+		  padding: 0 3px;
+		  text-transform: uppercase;
+		}
+		
+		
+		
+		
+		@keyframes rise {
+		  from {
+					transform: translate(-40px, 20px);
+		  }
+		  to {
+					transform: translate(0, 0px);
+		  }
+		}
+		
+		.proverb {
+			font-size: 1.3rem;
+			position: absolute;
+			top: 60%;
+			left: 0%;
+			text-align: center;
+			width: 100%;
+			padding: .5rem 0;
+			background: #d1baca;
+			height: 100%;
+		}</style>
+	<title>RAKSHAK X</title>
+</head>
+<body>
+	<button id="bwd"> ◄ </button>
+	<div class="frame">
+		<div class="moon">
+		  <div class="moon-crater1"></div>
+		  <div class="moon-crater2"></div>
+		</div>
+		<div class="hill-bg-1"></div>
+		<div class="hill-bg-2"></div>
+		<div class="hill-fg-1"></div>
+		<div class="hill-fg-2"></div>
+		<div class="hill-fg-3"></div>
+		  
+		<div class="front">
+			  <div>
+				  <div class="temperature"> 12°</div>
+				  <div class="icons">
+					  <i class="fas fa-wind"></i><br/><br/><i class="fas fa-tint"></i>
+				  </div>
+				  <div>
+					  <div class="info">
+						   E 7 km/h <br> 87%
+					  </div>
+					  <div class="heading">
+						  Pressure
+					  </div>
+					  <table class="preview">
+						  <tbody>
+							  <tr>
+								  <td>Internal</td>
+								  <td>21°</td>
+							  </tr>
+							  <tr>
+								  <td>External </td>
+								  <td>50</td>
+							  </tr>
+						  </tbody>
+					  </table>
+				  </div>
+			  </div>
+			  <div class="proverb">“Frogs croaking in the lagoon,<br/>Means rain will come real soon.”</div>
+		  </div>
+		  
+		  <script>// Replace this with your actual API key from WeatherAPI
+			const API_KEY = "a9145efcb571474aae360447250901";
+			
+			// Function to get the user's GPS location
+			function getLocation() {
+			  if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(fetchWeatherData, showError);
+			  } else {
+				alert("Geolocation is not supported by this browser.");
+			  }
+			}
+			
+			// Function to fetch weather data from the API
+			function fetchWeatherData(position) {
+			  const latitude = position.coords.latitude;
+			  const longitude = position.coords.longitude;
+			
+			  const weatherApiUrl = `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${latitude},${longitude}&aqi=yes`;
+			
+			  fetch(weatherApiUrl)
+				.then(response => {
+				  if (!response.ok) {
+					throw new Error("Network response was not ok " + response.statusText);
+				  }
+				  return response.json();
+				})
+				.then(data => {
+				  updateWeatherUI(data);
+				})
+				.catch(error => {
+				  console.error("There was a problem with the fetch operation:", error);
+				  alert("Unable to retrieve weather data. Please try again later.");
+				});
+			}
+			
+			// Function to update the weather information in the customized HTML
+			function updateWeatherUI(data) {
+			  const temperatureElement = document.querySelector(".temperature");
+			  const iconsElement = document.querySelector(".icons");
+			  const infoElement = document.querySelector(".info");
+			  const previewTable = document.querySelector(".preview tbody");
+			  const proverbElement = document.querySelector(".proverb");
+			
+			  if (!temperatureElement || !iconsElement || !infoElement || !previewTable || !proverbElement) {
+				console.error("Required elements for weather UI are missing.");
+				return;
+			  }
+			
+			  const { current, location } = data;
+			  console.log(current.wind_kph)
+			  // Update temperature
+			  temperatureElement.textContent = `${current.temp_c}°`;
+			
+			  // Update icons
+			  iconsElement.innerHTML = `
+				<i class="fas fa-wind"></i><br/><i class="fas fa-tint"></i>
+			  `;
+			
+			  // Update wind and humidity info
+			  infoElement.innerHTML = `${current.wind_dir} ${current.wind_kph} km/h <br> ${current.humidity}%`;
+			
+			  // Update forecast (mocked for now since current.json does not provide forecast)
+			  previewTable.innerHTML = `
+				<tr>
+				  <td>External</td>
+				  <td>${current.pressure_mb}00</td>
+				</tr>
+				<tr>
+				  <td>Internal</td>
+				  <td id ="internal_out">98994</td>
+				</tr>
+			  `;
+			
+			  // Update proverb dynamically (optional, static placeholder kept)
+			  proverbElement.textContent = "“Weather data retrieved successfully!";
+			}
+			
+			// Function to handle errors from the geolocation API
+			function showError(error) {
+			  switch (error.code) {
+				case error.PERMISSION_DENIED:
+				  alert("User denied the request for Geolocation.");
+				  break;
+				case error.POSITION_UNAVAILABLE:
+				  alert("Location information is unavailable.");
+				  break;
+				case error.TIMEOUT:
+				  alert("The request to get user location timed out.");
+				  break;
+				case error.UNKNOWN_ERROR:
+				  alert("An unknown error occurred.");
+				  break;
+			  }
+			}
+			
+			// Call getLocation when the page loads
+			window.onload = getLocation;
+			// const modeToggle = document.getElementById('modeToggle');
+			// const modeLabel = document.getElementById('modeLabel');
+			// modeToggle.addEventListener('change', () => {
+			//   document.body.classList.toggle('dark-mode');
+			//   modeLabel.textContent = modeToggle.checked ? 'Dark Mode' : 'Light Mode';
+			// });
+			
+			setInterval(function() {
+			  fetch('/').then(response => response.json()).then(data => {
+				document.getElementById('temp').innerHTML = data.temp;
+				document.getElementById('pressure').innerHTML = data.pressure;
+				document.getElementById('internal').innerHTML = data.pressure;
+				document.getElementById('internal_out').innerHTML = data.pressure;
+				document.getElementById('altitude').innerHTML = data.altitude;
+				document.getElementById('co-level').innerHTML = data.co_level;
+				console.log(data);
+			  });
+			}, 2500);</script>
+	  </div>
+	<div class='container'>
+		<h1>Environmental Data Dashboard</h1>
+		<div class='data-container'>
+		<div class='data-item'>
+			<label for='temperature'>Temperature ( &#176 C):</label><span id='temp'>32</span>
+		</div>
+		<div class='data-item'>
+			<label for='pressure'>Pressure (Pa):</label><span id='pressure'>100000</span>
+		</div>
+		<div class='data-item'>
+			<label for='altitude'>Altitude (m):</label><span id='altitude'>200</span>
+		</div>
+		<div class='data-item'>
+			<label for='co-level'>Poisnous Gas Level:</label><span id='co-level'>12</span>
+		</div>
+		<div id="status"></div>
+		</div>
+	</div>
+	<div class="joystick">
+        <button class="up" onclick="moveup()">↑</button>
+        <button class="left" onclick="moveleft()">←</button>
+        <button class="right" onclick="moveright()">→</button>
+        <button class="stop" onclick="stop()">🛑</button>
+        <button class="down" onclick="movedown()">↓</button>
+    </div>
+
+	<button id = "fwd"> ► </button>
+<script>
+	const weatherData = document.querySelector(".frame");
+	const sensorData = document.querySelector(".container");
+	const joystick = document.querySelector(".joystick");
+	const next = document.querySelector("#fwd");
+	const prev = document.querySelector("#bwd");
+	let visible = 0;
+	let divs = [weatherData, sensorData, joystick];
+	sensorData.style.display = 'none';
+	joystick.style.display = 'none';
+
+	next.addEventListener("click", ()=>{
+		visible++;
+		if (visible>=3){
+			visible = 0;
+		}
+		for(let i=0;i<3; i++){
+			divs[i].style.display = "none";
+		}
+		divs[visible].style.display = visible==2?'grid':'block';
+	});
+
+	prev.addEventListener("click", ()=>{
+		visible--;
+		if (visible<0){
+			visible = 2;
+		}
+		for(let i=0;i<3; i++){
+			divs[i].style.display = "none";
+		}
+		divs[visible].style.display = visible==2?'grid':'block';
+	});
+
+	// RECIEVE DATA FROM ESP
+	const endpoint = "http://192.168.15.164/";
+
+	async function fetchData() {
+        const status = document.getElementById("status");
+        try {
+          const response = await fetch(endpoint);
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById("temp").innerText = `${data.temperature}`;
+			document.getElementById("pressure").innerText = `${data.pressure}`;
+			document.getElementById("altitude").innerText = `${data.altitude}`;
+			document.getElementById("co-level").innerText = `${data.co_level}`;
+			status.innerText = `Last updated: ${new Date().toLocaleTimeString()}`;
+			// if (data.prblm){
+			// 	Swal.fire({
+			// 		title: 'WARNING',
+			// 		html: '!! EMERGENCY ALERT BUTTON PRESSED !!<br> Emergency services are being contacted',
+			// 		icon: 'info', // 'success', 'error', 'warning', 'info', 'question'
+			// 		confirmButtonText: 'OK'
+			// 	});
+      //   	}
+			// if(data.temp > 40){
+			// 	Swal.fire({
+			// 		title: 'WARNING',
+			// 		text: 'There might be a FIRE in your area',
+			// 		icon: 'warning', // 'success', 'error', 'warning', 'info', 'question'
+			// 		confirmButtonText: 'OK'
+			// 	});
+			// }
+			// if(data.pressure < 60000){
+      //       	Swal.fire({
+			// 		title: 'WARNING',
+			// 		text: 'There might be a STORM or TORNADO in your area',
+			// 		icon: 'warning', // 'success', 'error', 'warning', 'info', 'question'
+			// 		confirmButtonText: 'OK'
+			// 	});
+      //     	}
+			// if(data.co_level>2500){
+      //       	Swal.fire({
+			// 		title: 'WARNING',
+			// 		text: 'There are HIGH amount of POISNOUS GASSES in your area',
+			// 		icon: 'warning', // 'success', 'error', 'warning', 'info', 'question'
+			// 		confirmButtonText: 'OK'
+			// 	});
+  		// 	}
+			
+          } else {
+            status.innerText = `FAILED TO FETCH DATA \n Error: ${response.statusText}`;
+          }
+        } catch (error) {
+          status.innerText = `Netwrok issue... Trying to reconnect...`;//`Error fetching data. \n Error: ${error.message}`;
+        }
+      }
+      // Fetch data automatically every 5 seconds
+      setInterval(fetchData, 5000);
+      // Fetch data once on page load
+      fetchData();
+
+// Send to ESP
+	const ESP_URL = "http://192.168.25.68/command";
+  
+  function sendToESP(message) {	
+	const url = `${ESP_URL}?action=${encodeURIComponent(message)}`;
+	fetch(url)
+	  .then((response) => {
+		if (response.ok) {
+		  return response.text();
+		} else {
+		  throw new Error(`ESP responded with status ${response.status}`);
+		}
+	  })
+	  .then((data) => {
+		outputDiv.textContent += `\nESP Response: ${data}`;
+	  })
+	  .catch((error) => {
+		outputDiv.textContent += `Netwrok issue... Trying to reconnect...`;//`\nError: ${error.message}`;
+	  });
+  }
+  function movedown() {
+	sendToESP("backward");
+  }
+  function moveup() {
+	sendToESP("forward");
+  }
+  function moveleft() {
+	sendToESP("left");
+  }
+  function moveright() {
+	sendToESP("right");
+  }
+  function stop() {
+	sendToESP("stop");
+  }
+    </script>
+</script>
+</body>
+</html>
